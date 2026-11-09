@@ -105,8 +105,8 @@
       (function () {
         var APP_ID = '6821093765';
         var PKG = 'com.hodoostudio.dogweather';
-        var PT = ''; // App Store Connect 캠페인 링크의 pt(공급자 토큰) — 비어 있으면 캠페인 값 없이 넘긴다
-        var safe = /^[A-Za-z0-9._-]{1,40}$/;
+        var PT = '129589696'; // App Store Connect 캠페인 링크의 pt(공급자 토큰 — 개발자 계정마다 하나, 비밀값 아님)
+        var safe = /^[A-Za-z0-9._-]{1,30}$/; // Apple 캠페인 값(ct)은 30자까지
 
         var q = new URLSearchParams(location.search);
         var c = q.get('c');
