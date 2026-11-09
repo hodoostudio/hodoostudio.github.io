@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>멍날씨 받기</title>
+    <meta name="description" content="강아지 산책 날씨 — 옷차림 · 노면 온도 · 미세먼지 · 기록 · 일정" />
+    <meta property="og:title" content="멍날씨 - 강아지 산책 날씨" />
+    <meta property="og:description" content="옷차림 · 노면 온도 · 미세먼지 · 기록 · 일정" />
+    <meta property="og:image" content="https://hodoostudio.github.io/download/icon.png" />
+    <link rel="icon" href="icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Jua&text=%EB%A9%8D%EB%82%A0%EC%94%A8&display=swap"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #f2f3f4;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+          sans-serif;
+        color: #1e2430;
+        display: flex;
+        justify-content: center;
+        padding: 56px 16px;
+      }
+      main {
+        width: 100%;
+        max-width: 360px;
+        background: #fff;
+        border-radius: 24px;
+        padding: 36px 24px 32px;
+        text-align: center;
+      }
+      .icon {
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
+        display: block;
+        margin: 0 auto;
+      }
+      h1 {
+        font-family: 'Jua', sans-serif;
+        font-weight: 400;
+        font-size: 34px;
+        margin: 16px 0 4px;
+      }
+      .sub {
+        margin: 0;
+        font-size: 15px;
+        color: #646e82;
+      }
+      .status {
+        margin: 28px 0 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #1e2430;
+        min-height: 48px;
+      }
+      .badges {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .badges a {
+        display: block;
+        line-height: 0;
+      }
+      .badges img {
+        height: 52px;
+        width: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img class="icon" src="icon.png" width="96" height="96" alt="" />
+      <h1>멍날씨</h1>
+      <p class="sub">강아지 산책 날씨</p>
+      <p class="status" id="status">휴대폰에 맞는 스토어를 눌러 받아 주세요.</p>
+      <div class="badges">
+        <a id="ios" href="https://apps.apple.com/app/id6821093765"
+          ><img src="app-store-ko.svg" alt="App Store에서 다운로드" height="52"
+        /></a>
+        <a id="android" href="https://play.google.com/store/apps/details?id=com.hodoostudio.dogweather"
+          ><img src="google-play-ko.png" alt="Google Play에서 다운로드" height="52"
+        /></a>
+      </div>
+    </main>
+    <script>
+      // 광고 · 프로필 링크는 /download/?c=<캠페인> — c 는 App Store 캠페인(ct)과 Play UTM(utm_campaign)에 그대로 붙는다.
+      // s 는 Play 의 utm_source(없으면 instagram). 들어오면 OS 를 보고 그 스토어로 넘기고, 못 넘어가면 버튼이 남는다.
+      (function () {
+        var APP_ID = '6821093765';
+        var PKG = 'com.hodoostudio.dogweather';
+        var PT = ''; // App Store Connect 캠페인 링크의 pt(공급자 토큰) — 비어 있으면 캠페인 값 없이 넘긴다
+        var safe = /^[A-Za-z0-9._-]{1,40}$/;
+
+        var q = new URLSearchParams(location.search);
+        var c = q.get('c');
+        if (!c || !safe.test(c)) c = '';
+        var s = q.get('s');
+        if (!s || !safe.test(s)) s = 'instagram';
+
+        var ios =
+          PT && c
+            ? 'https://apps.apple.com/app/apple-store/id' +
+              APP_ID +
+              '?pt=' +
+              PT +
+              '&ct=' +
+              encodeURIComponent(c) +
+              '&mt=8'
+            : 'https://apps.apple.com/app/id' + APP_ID;
+        var android =
+          'https://play.google.com/store/apps/details?id=' +
+          PKG +
+          (c
+            ? '&referrer=' +
+              encodeURIComponent('utm_source=' + s + '&utm_campaign=' + c)
+            : '');
+        document.getElementById('ios').href = ios;
+        document.getElementById('android').href = android;
+
+        var ua = navigator.userAgent || '';
+        var os = /Android/i.test(ua)
+          ? 'android'
+          : /iPhone|iPad|iPod/i.test(ua) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+            ? 'ios'
+            : '';
+        if (!os) return;
+
+        document.getElementById('status').innerHTML =
+          (os === 'ios' ? 'App Store' : 'Google Play') +
+          '로 이동하고 있어요.<br />넘어가지 않으면 아래 버튼을 눌러 주세요.';
+        location.replace(os === 'ios' ? ios : android);
+      })();
+    </script>
+  </body>
+</html>
