@@ -91,7 +91,7 @@
       <p class="sub">강아지 산책 날씨</p>
       <p class="status" id="status">휴대폰에 맞는 스토어를 눌러 받아 주세요.</p>
       <div class="badges">
-        <a id="ios" href="https://apps.apple.com/app/id6821093765"
+        <a id="ios" href="https://apps.apple.com/kr/app/id6821093765"
           ><img src="app-store-ko.svg" alt="App Store에서 다운로드" height="52"
         /></a>
         <a id="android" href="https://play.google.com/store/apps/details?id=com.hodoostudio.dogweather"
@@ -116,14 +116,14 @@
 
         var ios =
           PT && c
-            ? 'https://apps.apple.com/app/apple-store/id' +
+            ? 'https://apps.apple.com/kr/app/apple-store/id' +
               APP_ID +
               '?pt=' +
               PT +
               '&ct=' +
               encodeURIComponent(c) +
               '&mt=8'
-            : 'https://apps.apple.com/app/id' + APP_ID;
+            : 'https://apps.apple.com/kr/app/id' + APP_ID; // 나라 없는 주소는 웹에서 미국 스토어로 가 404 — 멍날씨는 한국 스토어에만 있다
         var android =
           'https://play.google.com/store/apps/details?id=' +
           PKG +
