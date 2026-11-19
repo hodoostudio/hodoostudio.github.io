@@ -663,6 +663,22 @@ footer.foot .wrap{padding-block:8px 28px;color:var(--muted);font-size:13px;displ
 .share-foot .btn{flex:1 1 auto;min-height:48px}
 .share-foot.three{grid-template-columns:.8fr 1fr 1.2fr}
 .share-note b{color:var(--ink)}
+
+/* 케이크 띠 — 제목줄 아래 흰 카드 한 줄 · 누르면 시트(운영자 2026-11-19 — 색 시안 3, 사진에만 색. 덤이라 확대 없이) */
+.cakebar{display:flex;align-items:center;gap:10px;width:100%;max-width:520px;min-height:56px;margin-top:10px;padding:8px 12px 8px 8px;border:0;border-radius:14px;background:var(--surface);color:var(--ink);text-align:left;cursor:pointer}
+.cakebar img{width:40px;height:40px;border-radius:10px;flex:0 0 auto;background:var(--sunk)}
+.cakebar span{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.cakebar b{font-size:14px;font-weight:800}
+.cakebar small{font-size:12px;font-weight:600;color:var(--muted)}
+.cakebar svg{width:18px;height:18px;flex:0 0 auto;color:var(--faint)}
+body[data-tab]:not([data-tab="find"]) .cakebar{display:none} /* 찾기 탭에만(운영자 2026-11-19). 탭이 정해지기 전(data-tab 없음)에는 보여 첫 그림이 밀리지 않는다 */
+.buy-body.cake{display:flex;flex-direction:column;gap:8px;padding-bottom:calc(16px + var(--sab))}
+.buy-body.cake p{margin:0 0 6px;color:var(--muted);font-size:14px;line-height:1.5}
+.buy-body.cake small{margin-top:4px;font-size:12px;color:var(--muted);text-align:center}
+.cake-ph{display:flex;gap:8px;overflow-x:auto;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 8px;padding:0 max(16px,env(safe-area-inset-left,0px));scrollbar-width:none}
+.cake-ph::-webkit-scrollbar{display:none}
+.cake-ph img{flex:0 0 auto;width:132px;height:165px;max-width:none;border-radius:16px;object-fit:cover;background:var(--sunk)}
+.buy-body.cake .btn.line{background:var(--surface)}
 </style>
 <div class="inapp" id="inapp" hidden>
   <div class="wrap">
@@ -680,6 +696,7 @@ footer.foot .wrap{padding-block:8px 28px;color:var(--muted);font-size:13px;displ
     <h1>멍날씨가 만든 메가주 길잡이</h1>
     <div class="sub"><span class="dday" id="dday"></span><span>11월 20–22일 · 킨텍스 제1전시장 2–5홀</span></div>
     <div class="updated"><span id="updated"></span> · 부스는 현장 안내가 우선이에요</div>
+    <button type="button" class="cakebar" id="cakeOpen" aria-haspopup="dialog"><img src="cake/t.webp" alt="" width="40" height="40"><span><b>우리 강아지 꼭 닮은 케이크</b><small>사진 한 장이면 돼요 · 생일 · 기념일</small></span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
   </div>
 </header>
 
@@ -882,6 +899,20 @@ footer.foot .wrap{padding-block:8px 28px;color:var(--muted);font-size:13px;displ
   </section>
 </div>
 <div class="bpick" id="boothPick" role="dialog" aria-labelledby="bpTitle" hidden><div class="bp-head"><b id="bpTitle"></b><button class="icon" type="button" id="bpClose" aria-label="닫기"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg></button></div><ul id="bpList"></ul></div>
+<!-- 케이크 — 멍날씨 앱 생일 제휴 가게(광고료 없음 · 메가주 참가 브랜드 아님). 주소 · 사진은 앱의 생일 제휴 시트와 같다(Supabase app.promo 'birthday') — 바뀌면 여기도 고친다 -->
+<div class="layer" id="cakeLayer">
+  <div class="scrim" id="cakeScrim"></div>
+  <section class="sheet buysheet" id="cake" role="dialog" aria-modal="true" aria-labelledby="cakeTitle">
+    <div class="buy-head"><h2 id="cakeTitle" tabindex="-1">우리 강아지 꼭 닮은 케이크</h2><button class="icon" type="button" id="cakeClose" aria-label="닫기"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg></button></div>
+    <div class="buy-body cake">
+      <p>생일 · 기념일에 우리 강아지를 꼭 닮은 케이크는 어때요? 사진 한 장이면 돼요.</p>
+      <div class="cake-ph"><img src="cake/s1.webp" alt="강아지를 닮은 케이크 사진 1" width="132" height="165" loading="lazy"><img src="cake/s2.webp" alt="강아지를 닮은 케이크 사진 2" width="132" height="165" loading="lazy"><img src="cake/s3.webp" alt="강아지를 닮은 케이크 사진 3" width="132" height="165" loading="lazy"><img src="cake/s4.webp" alt="강아지를 닮은 케이크 사진 4" width="132" height="165" loading="lazy"></div>
+      <a class="btn primary" href="https://pf.kakao.com/_xcnxgzX/chat" target="_blank" rel="noopener noreferrer">카카오톡 채널로 주문 문의<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3h6v6M17 3l-8 8M15 11v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></a>
+      <a class="btn line" href="https://www.instagram.com/woodada_cake" target="_blank" rel="noopener noreferrer">인스타그램에서 케이크 보기<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3h6v6M17 3l-8 8M15 11v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></a>
+      <small>멍날씨 앱 생일 제휴 가게예요 · 메가주 부스는 없어요</small>
+    </div>
+  </section>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button><button type="button" id="toastAct2" hidden></button></div>
 
 <script>
@@ -2617,6 +2648,15 @@ $("shareFoot").addEventListener("click",e=>{
 });
 $("shareClose").addEventListener("click",closeShareIn);
 guardLayer($("shareLayer"));
+/* 케이크 띠 → 시트(운영자 2026-11-19 — 덤이라 서비스를 건드리지 않게 가볍게). 열고 닫기만 — 기록(history) 칸 · body.lock · 사진 확대 없음.
+   닫기는 ✕ · 바깥 · Esc. 휴대폰 뒤로 가기는 브라우저 그대로(페이지를 떠난다) */
+let cakeOn=false;
+function closeCake(){ if(!cakeOn) return; cakeOn=false; $("cakeLayer").classList.remove("open"); $("cakeOpen").focus({preventScroll:true}); }
+$("cakeOpen").addEventListener("click",()=>{ cakeOn=true; $("cakeLayer").classList.add("open"); $("cakeTitle").focus({preventScroll:true}); });
+$("cakeClose").addEventListener("click",closeCake);
+$("cakeScrim").addEventListener("click",closeCake);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCake(); });
+guardLayer($("cakeLayer"));
 $("shareNote").addEventListener("click",async()=>{
   const o=sharePayload();
   if(!o.f.length && !o.d.length && !o.l.length && !Object.keys(o.i).length && !Object.keys(o.m).length && !o.g.trim()){ toast("공유할 게 없어요 — 찾기에서 ☆로 담아 보세요"); return; }
