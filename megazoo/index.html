@@ -1877,7 +1877,19 @@ function evBodyHTML(e){
   const note = e.note ? `<p class="evwarn">${esc(e.note)}</p>` : "";
   return head+body+text+note;
 }
+/* 이벤트 카드 한 장. 상태에 따라 바뀌는 것은 '★ 찜' 칸뿐이다(찜이 바뀌면 patchEvItems 가 그 칸만 고친다) */
+function evItemHTML(x){ const {k,it,e}=x;
+  const d=/^\d{4}-\d{2}-\d{2}$/.test(e.date) ? `${+e.date.slice(5,7)}월 ${+e.date.slice(8,10)}일 올린 글` : "";
+  const pills=x.kinds.map(id=>`<span class="evk${id===evKind?" on":""}">${esc(EV_KINDS.find(z=>z[0]===id)[1])}</span>`).join("");
+  return `<li class="evitem" data-key="${k}"><button type="button" data-open aria-label="${esc(it.brand)}, 부스 ${esc(it.booths[0]||"")} 이벤트 보기"><span class="evb"><span class="booth">${esc(it.booths[0]||"-")}</span><b>${esc(it.brand)}</b>${fav.has(k)?'<small>★ 찜</small>':`<small>${esc(it.cat)}</small>`}</span></button><div class="evbody">${evBodyHTML(e)}</div>${pills?`<div class="evkinds">${pills}</div>`:""}<div class="evmeta"><span class="evdate">${d}</span><a class="evlink" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">인스타 원글 ↗</a></div></li>`;
+}
+function patchEvItems(keys){
+  for(const k of keys){ const it=byKey.get(k); if(!it) continue;
+    document.querySelectorAll('#evFeed .evitem[data-key="'+it.key+'"] .evb small').forEach(s=>{ s.textContent=fav.has(it.key)?"★ 찜":it.cat; }); }
+}
+let evToken=0;
 function renderEv(){
+  dirty.ev=false;
   const feed=evFeed();
   const inCat=x=>!evCat || x.it.cat===evCat, inKind=x=>!evKind || x.kinds.includes(evKind);
   const kinds=$("evKinds"); kinds.innerHTML="";
@@ -1890,11 +1902,20 @@ function renderEv(){
     cats.appendChild(chip(c,n,evCat===c,CAT_COLOR[c],()=>{ evCat=evCat===c?"":c; renderEv(); })); });
   const list=feed.filter(x=>inCat(x) && inKind(x));
   $("evCount").textContent=new Set(list.map(x=>x.k)).size; $("evN").textContent=list.length;
-  $("evFeed").innerHTML = list.length ? list.map(x=>{ const {k,it,e}=x;
-    const d=/^\d{4}-\d{2}-\d{2}$/.test(e.date) ? `${+e.date.slice(5,7)}월 ${+e.date.slice(8,10)}일 올린 글` : "";
-    const pills=x.kinds.map(id=>`<span class="evk${id===evKind?" on":""}">${esc(EV_KINDS.find(z=>z[0]===id)[1])}</span>`).join("");
-    return `<li class="evitem" data-key="${k}"><button type="button" data-open aria-label="${esc(it.brand)}, 부스 ${esc(it.booths[0]||"")} 이벤트 보기"><span class="evb"><span class="booth">${esc(it.booths[0]||"-")}</span><b>${esc(it.brand)}</b>${fav.has(k)?'<small>★ 찜</small>':`<small>${esc(it.cat)}</small>`}</span></button><div class="evbody">${evBodyHTML(e)}</div>${pills?`<div class="evkinds">${pills}</div>`:""}<div class="evmeta"><span class="evdate">${d}</span><a class="evlink" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">인스타 원글 ↗</a></div></li>`; }).join("")
-    : `<li class="evempty">이 조건의 이벤트가 없어요.<br><button class="link" type="button" data-evreset>전체 보기</button></li>`;
+  const root=$("evFeed"), token=++evToken;
+  if(!list.length){ root.innerHTML=`<li class="evempty">이 조건의 이벤트가 없어요.<br><button class="link" type="button" data-evreset>전체 보기</button></li>`; return; }
+  // 718개를 한 번에 그리면 4배 느린 CPU 에서 탭 한 번에 1.3 ~ 2초 멈췄다(2026-11-19 측정 · Cloudflare INP 의 탭 · 시트).
+  // 처음 30개만 바로, 나머지는 80개씩 따로 붙인다(찾기 목록과 같은 방식) — 거르기를 바꾸면 붙이던 것을 멈춘다
+  const FIRST=30, CHUNK=80;
+  root.innerHTML=list.slice(0,FIRST).map(evItemHTML).join("");
+  let at=FIRST;
+  const rest=()=>{
+    if(token!==evToken) return;
+    root.insertAdjacentHTML("beforeend",list.slice(at,at+CHUNK).map(evItemHTML).join(""));
+    at+=CHUNK;
+    if(at<list.length) setTimeout(rest,0);
+  };
+  if(list.length>FIRST) requestAnimationFrame(()=>setTimeout(rest,0));
 }
 
 function renderPrep(){
@@ -1919,11 +1940,12 @@ function renderTab(t){
     else if(findPending.size){ const ks=[...findPending]; findPending.clear(); patchFindCards(ks); }
     return;
   }
+  // 이벤트는 바뀐 것이 없으면 다시 그리지 않는다 — 안 보이는 탭(.off)이 그린 상태를 남겨 둔다. 찜은 patchEvItems 가 그 칸만 고친다
+  if(t==="ev"){ if(dirty.ev) renderEv(); return; }
   dirty[t]=false;
   if(t==="map") renderMap();
   else if(t==="note") renderNote();
   else if(t==="prep") renderPrep();
-  else if(t==="ev") renderEv();
 }
 function setTab(t,{initial=false}={}){
   if(!TABS.includes(t)) t="find";
@@ -1956,7 +1978,8 @@ function patchFindCards(keys){
 /* keys: 상태가 바뀐 브랜드(찾기 카드만 바꿔 끼우면 된다). all: 목록 전체를 다시(가져오기처럼 여럿이 한꺼번에) */
 function refresh(keys,{all=false}={}){
   updateCounts();
-  dirty.map=true; dirty.prep=true; dirty.ev=true;
+  dirty.map=true; dirty.prep=true;
+  if(all) dirty.ev=true; else if(keys) patchEvItems([].concat(keys));
   if(all){ dirty.find=true; dirty.note=true; }
   else if(keys) [].concat(keys).forEach(k=>findPending.add(k));
   if(st.tab==="find"){
